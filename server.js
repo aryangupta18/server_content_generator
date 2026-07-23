@@ -1,6 +1,9 @@
 const express = require("express");
 const userRouter = require("./routes/userRoute");
+const connectDB = require("./utils/connectDB");
 
+// ? db connection
+connectDB()
 
 // ? creating an instance of express
 const app = express();

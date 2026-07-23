@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    trialPeriod: {
+        type: Number,
+        default: 3, // 3 days
+    },
     trialExpires: {
         type: Date
     },
@@ -52,5 +56,5 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-const User = mongoose.mongo("User", userSchema)
+const User = mongoose.model("User", userSchema)
 module.exports = User
