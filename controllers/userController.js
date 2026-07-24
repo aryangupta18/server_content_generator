@@ -17,7 +17,7 @@ const register = async (req, res) => {
             throw new Error("email already associated with an account")
         }
         // * hashing the password
-        const salt = bcrypt.genSalt(10)
+        const salt = await bcrypt.genSalt(10)
         const hashedPass = await bcrypt.hash(password, salt)
         // * create the user
         const newUser = await new User({
@@ -30,7 +30,7 @@ const register = async (req, res) => {
             new Date().getTime() + newUser.trialPeriod * 24 * 60 * 60 * 1000
         )
         // * save the user
-        newUser.save()
+        await newUser.save()
 
         res.json({
             status: true,
