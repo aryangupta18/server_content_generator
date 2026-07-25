@@ -1,50 +1,77 @@
 const User = require("../models/User")
 const bcrypt = require("bcrypt")
+const asyncHandler = require("express-async-handler")
 
 // ? registration
-const register = async (req, res) => {
+const register = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body
-    try {
-        // * validate input
-        if (!username || !email || !password) {
-            res.status(400)
-            throw new Error("username, email and password are required")
-        }
-        // * check if user already exists
-        const exists = await User.findOne({ email })
-        if (exists) {
-            res.status(400)
-            throw new Error("email already associated with an account")
-        }
-        // * hashing the password
-        const salt = await bcrypt.genSalt(10)
-        const hashedPass = await bcrypt.hash(password, salt)
-        // * create the user
-        const newUser = await new User({
-            username,
-            email,
-            password: hashedPass,
-        })
-        // * add the date when trial ends
-        newUser.trialExpires = new Date(
-            new Date().getTime() + newUser.trialPeriod * 24 * 60 * 60 * 1000
-        )
-        // * save the user
-        await newUser.save()
-
-        res.json({
-            status: true,
-            message: "registration success",
-            user: {
-                username,
-                email
-            }
-        })
-    } catch (error) {
-        throw new Error(error)
+    // * validate input
+    if (!username || !email || !password) {
+        res.status(400)
+        throw new Error("username, email and password are required")
     }
-}
+    // * check if user already exists
+    const exists = await User.findOne({ email })
+    if (exists) {
+        res.status(400)
+        throw new Error("email already associated with an account")
+    }
+    // * hashing the password
+    const salt = await bcrypt.genSalt(10)
+    const hashedPass = await bcrypt.hash(password, salt)
+    // * create the user
+    const newUser = await new User({
+        username,
+        email,
+        password: hashedPass,
+    })
+    // * add the date when trial ends
+    newUser.trialExpires = new Date(
+        new Date().getTime() + newUser.trialPeriod * 24 * 60 * 60 * 1000
+    )
+    // * save the user
+    await newUser.save()
+
+    res.json({
+        status: true,
+        message: "registration success",
+        user: {
+            username,
+            email
+        }
+    })
+})
+
+// ? login
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body
+    if (!email || !password) {
+        res.status(401)
+        throw new Error("email and password are required")
+    }
+    const user = await User.findOne({ email })
+    if (!user) {
+        res.status(401)
+        throw new Error("user not found")
+    }
+    const isMatch =  await bcrypt.compare(password, user?.password)
+    if (!isMatch) {
+        res.status(401)
+        throw new Error("invalid credentials")
+    }
+
+    res.json({
+        status: true,
+        message: "login success",
+        user: {
+            username: user.username,
+            email: user.email,
+            trialExpires: user.trialExpires
+        }
+    })
+})
 
 module.exports = {
-    register
+    register,
+    login
 }
