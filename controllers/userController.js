@@ -1,6 +1,7 @@
 const User = require("../models/User")
 const bcrypt = require("bcrypt")
 const asyncHandler = require("express-async-handler")
+const jwt = require("jsonwebtoken")
 
 // ? registration
 const register = asyncHandler(async (req, res) => {
@@ -60,6 +61,15 @@ const login = asyncHandler(async (req, res) => {
         throw new Error("invalid credentials")
     }
 
+    // ? generate token
+    const token = jwt.sign({ id: user?._id }, process.env.JWT_SECRET, { expiresIn: "3d" })
+    // ? save the token in browser cookies
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
+    })
+
     res.json({
         status: true,
         message: "login success",
@@ -67,11 +77,38 @@ const login = asyncHandler(async (req, res) => {
             username: user.username,
             email: user.email,
             trialExpires: user.trialExpires
-        }
+        },
+        token
     })
 })
 
+// ? logout
+const logout = asyncHandler(async(req, res)=>{
+    res.cookie("token", '', {maxAge: 1})
+    res.status(200).json({
+        message: "logout success",
+    })
+})
+
+// ? profile
+const userProfile = asyncHandler(async(req, res)=>{
+    const foundUser = await User.findById(req.user?._id).select("-password")
+    if(foundUser){
+        res.status(200).json({
+            message: "user fetched",
+            foundUser,
+        })
+    } else {
+        res.status(404)
+        throw new Error("user not found")
+    }
+})
+
+// ! user not found error to be solved
+
 module.exports = {
     register,
-    login
+    login,
+    logout,
+    userProfile,
 }
