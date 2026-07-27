@@ -13,7 +13,7 @@ const isAuthenticated = asyncHandler(async (req, res, next) => {
         res.status(401)
         throw new Error("user not authenticated")
     }
-    next()
+    return next()
 })
 
 module.exports = isAuthenticated
