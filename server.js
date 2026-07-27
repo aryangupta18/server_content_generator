@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = require("./routes/userRoute");
 const connectDB = require("./utils/connectDB");
 const errorHandler = require("./middleware/errorHandelling");
+const cookieParser = require("cookie-parser");
 
 const dns = require("dns");
 dns.setServers(["1.1.1.1", "8.8.8.8"])
@@ -12,6 +13,7 @@ const PORT = 5000;
 
 // ? routes
 app.use(express.json());
+app.use(cookieParser()); // passes the cookies to the req object
 app.use("/api/user", userRouter)
 
 // ? error handling middleware

@@ -92,7 +92,8 @@ const logout = asyncHandler(async(req, res)=>{
 
 // ? profile
 const userProfile = asyncHandler(async(req, res)=>{
-    const foundUser = await User.findById(req.user?._id).select("-password")
+    console.log(req.user)
+    const foundUser = await User.findById(req.user).select("-password")
     if(foundUser){
         res.status(200).json({
             message: "user fetched",
