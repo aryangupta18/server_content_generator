@@ -17,27 +17,27 @@ const apiController = asyncHandler(async (req, res) => {
         });
 
         const content = response.output_text.trim();
+
         // * saving the generated content to the database
         const history = await History.create({
             user: req.user,
             content: content,
         });
-        // console.log(history);
-        // await history.save();
 
         // * save the history to the user's history collection in the database
         const userFound = await User.findById(req.user)
+
+        // * increase the apiRequestCount for the user
+        userFound.apiRequestCount += 1;
+
         if (userFound) {
             userFound.history.push(history._id);
             await userFound.save();
-            console.log("History saved to user's history collection");
         }
 
         res.json({ response: content });
         
     } catch (error) {
-        // console.error(error);
-
         res.status(500).json({
             message: error.message,
             stack: error.stack,
