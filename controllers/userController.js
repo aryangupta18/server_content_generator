@@ -26,10 +26,6 @@ const register = asyncHandler(async (req, res) => {
         email,
         password: hashedPass,
     })
-    // * add the date when trial ends
-    newUser.trialExpires = new Date(
-        new Date().getTime() + newUser.trialPeriod * 24 * 60 * 60 * 1000
-    )
     // * save the user
     await newUser.save()
 
@@ -76,7 +72,6 @@ const login = asyncHandler(async (req, res) => {
         user: {
             username: user.username,
             email: user.email,
-            trialExpires: user.trialExpires
         },
         token
     })
@@ -104,11 +99,25 @@ const userProfile = asyncHandler(async(req, res)=>{
     }
 })
 
-// ! user not found error to be solved
+// ? is authenticated 
+const checkAuth = asyncHandler(async(req, res)=>{
+    const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET)
+    if(!decoded){
+        res.json({
+            isAuthenticated: false,
+        })
+    } else {
+        res.json({
+            isAuthenticated: true,
+        })
+    }
+})
+
 
 module.exports = {
     register,
     login,
     logout,
     userProfile,
+    checkAuth,
 }

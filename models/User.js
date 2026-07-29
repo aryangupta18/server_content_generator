@@ -14,37 +14,37 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    // ? it is here to manage the free trial for 'n' days
-    trialActive: {
-        type: Boolean,
-        default: true,
-    },
-    trialPeriod: {
-        type: Number,
-        default: 3, // 3 days
-    },
-    trialExpires: {
-        type: Date
-    },
-    subscription: {
-        type: String,
-        enum: ["Free", "Basic", "Premium"]
-    },
-    apiRequestCount: {
-        type: Number,
-        default: 0,
-    },
-    monthlyRequestCount: {
-        type: Number,
-        default: 100,
-    },
-    nextBillingDate: Date,
-    payments: [
-        {
-            type: mongoose.Types.ObjectId,
-            ref: "Payment",
-        }
-    ],
+    // // ? it is here to manage the free trial for 'n' days
+    // trialActive: {
+    //     type: Boolean,
+    //     default: true,
+    // },
+    // trialPeriod: {
+    //     type: Number,
+    //     default: 3, // 3 days
+    // },
+    // trialExpires: {
+    //     type: Date
+    // },
+    // subscription: {
+    //     type: String,
+    //     enum: ["Free", "Basic", "Premium"]
+    // },
+    // apiRequestCount: {
+    //     type: Number,
+    //     default: 0,
+    // },
+    // monthlyRequestCount: {
+    //     type: Number,
+    //     default: 100,
+    // },
+    // nextBillingDate: Date,
+    // payments: [
+    //     {
+    //         type: mongoose.Types.ObjectId,
+    //         ref: "Payment",
+    //     }
+    // ],
     history: [
         {
             type: mongoose.Types.ObjectId,
