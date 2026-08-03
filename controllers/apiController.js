@@ -8,12 +8,12 @@ const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const apiController = asyncHandler(async (req, res) => {
-    const { text } = req.body;
+    const { prompt } = req.body;
     try {
         const response = await ai.interactions.create({
             model: "gemini-3.5-flash-lite",
             input:
-                "you are a helpful writing assistant that generates creative content. without any user interaction. you are going to help me generate content about " + text,
+                "you are a helpful writing assistant that generates creative content. without any user interaction. you are going to help me generate content about " + prompt,
         });
 
         const content = response.output_text.trim();
