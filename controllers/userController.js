@@ -87,7 +87,10 @@ const logout = asyncHandler(async(req, res)=>{
 
 // ? profile
 const userProfile = asyncHandler(async(req, res)=>{
-    const foundUser = await User.findById(req.user).select("-password")
+    const foundUser = await User.findById(req.user).select("-password").populate({
+    path: "history",
+    select: "content createdAt"
+  })
     if(foundUser){
         res.status(200).json({
             message: "user fetched",
